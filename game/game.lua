@@ -9,9 +9,9 @@ end
 
 function Game:update(dt)
   self.player1:emit("update", dt)
-  self.player1:emit("set_intent", function() return self:input() end)
+  self.player1:emit("set_intent", function() return self:keyboard_input() end)
   self.player2:emit("update", dt)
-  self.player2:emit("set_intent", function() return -self:input() end)
+  self.player2:emit("set_intent", function() return self:mouse_input(self.player2.Position:get()) end)
 end
 
 function Game:draw()
@@ -20,7 +20,7 @@ function Game:draw()
   self.player2:draw()
 end
 
-function Game:input()
+function Game:keyboard_input()
   local input = Vec(0, 0)
 
   if love.keyboard.isDown("up") then input.y = input.y - 1 end
@@ -29,6 +29,14 @@ function Game:input()
   if love.keyboard.isDown("left") then input.x = input.x - 1 end
 
   return input
+end
+
+function Game:mouse_input(pos)
+  local x, y = love.mouse.getPosition()
+  local input = Vec(x, y)
+  local diff = Vec(input - pos)
+  if diff:len() < 5 then return Vec.ZERO end
+  return diff:normalize()
 end
 
 return Game
