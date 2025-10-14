@@ -12,18 +12,32 @@ local Movement = class("Movement")
 ---@param player player.class
 function Movement:init(player, speed)
   self.velocity = speed
-  self:register("update", function(dt)
+  self.acc = 100
+  self._temp = Vec(0, 0)
+  self:register("update", function(dt, fn)
+    if fn then
+      self._temp = self._temp + (self:get() * fn(self.velocity) * dt) / 8
+      player:emit("move", self._temp)
+      return
+    end
+
     player:emit("move", self:get() * self.velocity * dt)
   end)
 
-  player:register("update", function(dt) self:update(dt) end)
+  player:register("update", function(dt, fn)
+    if fn then
+      self:update(dt, fn)
+      return
+    end
+    self:update(dt)
+  end)
   player:register("set_intent", function(dir) self:set(dir()) end)
 end
 
 function Movement:load() end
 
-function Movement:update(dt)
-  self:emit("update", dt)
+function Movement:update(dt, fn)
+  self:emit("update", dt, fn)
 end
 
 return Movement

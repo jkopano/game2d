@@ -34,7 +34,7 @@ function Player:init(anim_asset, position, scale)
     self.Position = Position(position or Vec(0, 0))
     self.Scale = Scale():set(scale or Vec(1, 1))
     self.Animation = Animation(anim_asset)
-    self.Movement = Movement(200)
+    self.Movement = Movement(100)
   end)
 end
 

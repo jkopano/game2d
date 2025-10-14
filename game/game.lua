@@ -8,7 +8,13 @@ function Game:init()
 end
 
 function Game:update(dt)
-  self.player1:emit("update", dt)
+  self.player1:emit("update", dt, function(vel)
+    local targetSpeed = 300
+    local smooth = 0.5
+    local velocity = targetSpeed * (1 - smooth) + vel * smooth
+
+    return velocity
+  end)
   self.player1:emit("set_intent", function() return self:keyboard_input() end)
   self.player2:emit("update", dt)
   self.player2:emit("set_intent", function() return self:mouse_input(self.player2.Position:get()) end)
