@@ -1,83 +1,34 @@
-local class = require("lib.middleclass")
-
 local Game = class("Game")
+---@type player.class
+local Player = require("src.player")
 
-local function create_spreetsheet(iw, ih, qw, qh, sheet)
-  local o = {}
-
-  for i, v in ipairs(sheet) do
-    local quad = love.graphics.newQuad(
-      v.x * qw,
-      v.y * qh,
-      qw, qh, iw, ih
-    )
-
-    table.insert(o, i, quad)
-  end
-
-  return o
-end
-
-function Game:initialize()
-  self.rec = { x = 800, y = 400, width = 100, height = 100 }
-  self.dt = 0
-  self.image = love.graphics.newImage("assets/main.png")
-  self.quads_one = create_spreetsheet(512, 512, 16, 16, {
-    { x = 8,  y = 1 },
-    { x = 9,  y = 1 },
-    { x = 10, y = 1 },
-    { x = 11, y = 1 },
-  })
-  self.quads_two = create_spreetsheet(512, 512, 16, 32, {
-    { x = 8,  y = 1 },
-    { x = 9,  y = 1 },
-    { x = 10, y = 1 },
-    { x = 11, y = 1 },
-  })
+function Game:init()
+  self.player1 = Player:new("player", Vec(950, 600), Vec(5, 5))
+  self.player2 = Player:new("knight", Vec(950, 500), Vec(5, 5))
 end
 
 function Game:update(dt)
-  self.dt = self.dt + dt
+  self.player1:emit("update", dt)
+  self.player1:emit("set_intent", function() return self:input() end)
+  self.player2:emit("update", dt)
+  self.player2:emit("set_intent", function() return -self:input() end)
 end
 
 function Game:draw()
   love.graphics.setBackgroundColor(1, 0.5, 0.5, 1)
-  -- love.graphics.push()
-  -- love.graphics.setColor(0, 0, 0, 1)
-  local dt = self.dt * 4
-  local sin_pos = 2 / math.pi * math.asin(math.sin(dt)) * 100
-  local sx = 5
-  if math.cos(dt) > 0 then sx = 5 else sx = -5 end
+  self.player1:draw()
+  self.player2:draw()
+end
 
-  local quad_one = self.quads_one[math.floor(dt * 2) % 4 + 1]
-  local _, _, w1, h1 = quad_one:getViewport()
+function Game:input()
+  local input = Vec(0, 0)
 
-  local quad_two = self.quads_two[math.floor(dt * 2) % 4 + 1]
-  local _, _, w2, h2 = quad_one:getViewport()
+  if love.keyboard.isDown("up") then input.y = input.y - 1 end
+  if love.keyboard.isDown("down") then input.y = input.y + 1 end
+  if love.keyboard.isDown("right") then input.x = input.x + 1 end
+  if love.keyboard.isDown("left") then input.x = input.x - 1 end
 
-  love.graphics.draw(
-    self.image,
-    quad_one,
-    940 + sin_pos,
-    640,
-    0,
-    sx,
-    5,
-    w1 / 2,
-    h1 / 2
-  )
-
-  love.graphics.draw(
-    self.image,
-    quad_two,
-    940,
-    240 + (sin_pos / 2),
-    0,
-    5,
-    5,
-    w2 / 2,
-    h2 / 2
-  )
+  return input
 end
 
 return Game

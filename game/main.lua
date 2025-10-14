@@ -1,14 +1,14 @@
-https = nil
 local overlayStats = require("lib.overlayStats")
-local runtimeLoader = require("runtime.loader")
+require "init"
 
 local Game = require("game")
+local game
 
 function love.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
-  https = runtimeLoader.loadHTTPS()
-  -- Your game load here
+  load_assets()
   game = Game()
+  -- Your game load here
   overlayStats.load() -- Should always be called last
 end
 
