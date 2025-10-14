@@ -44,14 +44,15 @@ function Game:draw()
   love.graphics.setBackgroundColor(1, 0.5, 0.5, 1)
   -- love.graphics.push()
   -- love.graphics.setColor(0, 0, 0, 1)
-  local sin_pos = math.sin(self.dt) * 100
+  local dt = self.dt * 4
+  local sin_pos = 2 / math.pi * math.asin(math.sin(dt)) * 100
   local sx = 5
-  if math.cos(self.dt) > 0 then sx = 5 else sx = -5 end
+  if math.cos(dt) > 0 then sx = 5 else sx = -5 end
 
-  local quad_one = self.quads_one[math.floor(self.dt * 2) % 4 + 1]
+  local quad_one = self.quads_one[math.floor(dt * 2) % 4 + 1]
   local _, _, w1, h1 = quad_one:getViewport()
 
-  local quad_two = self.quads_two[math.floor(self.dt * 2) % 4 + 1]
+  local quad_two = self.quads_two[math.floor(dt * 2) % 4 + 1]
   local _, _, w2, h2 = quad_one:getViewport()
 
   love.graphics.draw(
